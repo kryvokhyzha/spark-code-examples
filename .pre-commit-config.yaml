@@ -1,41 +1,30 @@
 repos:
--   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v1.6.1
-    hooks:
-    -   id: pretty-format-java
-        args: [--autofix]
-    -   id: pretty-format-yaml
-        args: [--autofix, --indent, '2']
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v0.3.0
-    default_phase: push #change to commit if desired
-    hooks: #mix and match any of the following:
-    -   id: sbt-fatal-warnings #arguments optional
-        args: [--scope=test:compile]
-    -   id: sbt-unused-imports #includes fatal warnings, arguments optional
-        args: [--scope=test:compile]
-    -   id: sbt-scalafmt
-    -   id: sbt-wartremover #arguments are optional
-        args: [--warts=Warts.unsafe, --scope=test:compile]
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
-    hooks:
-    -   id: check-yaml
--   repo: https://github.com/psf/black
-    rev: stable
-    hooks:
-    -   id: black
--   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.4
-    hooks:
-    -   id: flake8
--   repo: https://github.com/pre-commit/mirrors-isort
-    rev: '5.7.0'  # Use the revision sha / tag you want to point at
-    hooks:
-    -   id: isort
--   repo: https://github.com/nbQA-dev/nbQA
-    rev: 0.5.7
-    hooks:
-    -   id: nbqa-black
-    -   id: nbqa-isort
-    -   id: nbqa-pyupgrade
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v1.6.1
+  hooks:
+  - id: pretty-format-java
+    args: [--autofix]
+  - id: pretty-format-yaml
+    args: [--autofix, --indent, '2']
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.3.0
+  hooks:
+  - id: check-yaml
+- repo: https://github.com/psf/black
+  rev: stable
+  hooks:
+  - id: black
+- repo: https://gitlab.com/pycqa/flake8
+  rev: 3.8.4
+  hooks:
+  - id: flake8
+- repo: https://github.com/pre-commit/mirrors-isort
+  rev: ''    # Use the revision sha / tag you want to point at
+  hooks:
+  - id: isort
+- repo: https://github.com/nbQA-dev/nbQA
+  rev: 0.5.7
+  hooks:
+  - id: nbqa-black
+  - id: nbqa-isort
+  - id: nbqa-pyupgrade
