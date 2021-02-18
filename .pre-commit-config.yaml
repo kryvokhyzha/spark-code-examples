@@ -11,13 +11,13 @@ repos:
   hooks:
   - id: nbqa-isort
     args: [--nbqa-mutate]
-    exclude: ^advanced-machine-learning-and-signal-processing/Examples/
+    exclude: advanced-machine-learning-and-signal-processing/Examples/|spark-fundamentals-I/
   - id: nbqa-black
     args: [--nbqa-mutate]
-    exclude: ^advanced-machine-learning-and-signal-processing/Examples/
+    exclude: advanced-machine-learning-and-signal-processing/Examples/|spark-fundamentals-I/
   - id: nbqa-pyupgrade
     args: [--nbqa-mutate]
-    exclude: ^advanced-machine-learning-and-signal-processing/Examples/
+    exclude: advanced-machine-learning-and-signal-processing/Examples/|spark-fundamentals-I/
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.3.0
   hooks:
