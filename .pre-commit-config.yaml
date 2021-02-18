@@ -6,6 +6,12 @@ repos:
     args: [--autofix]
   - id: pretty-format-yaml
     args: [--autofix, --indent, '2']
+- repo: https://github.com/nbQA-dev/nbQA
+  rev: 0.5.7
+  hooks:
+  - id: nbqa-black
+  - id: nbqa-isort
+  - id: nbqa-pyupgrade
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.3.0
   hooks:
@@ -18,13 +24,3 @@ repos:
   rev: 3.8.4
   hooks:
   - id: flake8
-- repo: https://github.com/pre-commit/mirrors-isort
-  rev: ''    # Use the revision sha / tag you want to point at
-  hooks:
-  - id: isort
-- repo: https://github.com/nbQA-dev/nbQA
-  rev: 0.5.7
-  hooks:
-  - id: nbqa-black
-  - id: nbqa-isort
-  - id: nbqa-pyupgrade

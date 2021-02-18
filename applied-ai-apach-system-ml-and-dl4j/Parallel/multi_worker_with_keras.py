@@ -19,7 +19,7 @@
 #
 
 # + colab={} colab_type="code" id="tuOe1ymfHZPu"
-#@title Licensed under the Apache License, Version 2.0 (the "License");
+# @title Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -64,12 +64,19 @@
 # First, setup TensorFlow and the necessary imports.
 
 # + colab={} colab_type="code" id="IqR2PQG4ZaZ0"
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
+
+import tensorflow as tf
+import tensorflow_datasets as tfds
 
 # + colab={} colab_type="code" id="bnYxvfLD-LW-"
 
-import tensorflow_datasets as tfds
-import tensorflow as tf
+
 tfds.disable_progress_bar()
 
 # + [markdown] colab_type="text" id="hPBuZUNSZmrQ"
@@ -83,18 +90,22 @@ tfds.disable_progress_bar()
 BUFFER_SIZE = 10000
 BATCH_SIZE = 64
 
+
 def make_datasets_unbatched():
-  # Scaling MNIST data from (0, 255] to (0., 1.]
-  def scale(image, label):
-    image = tf.cast(image, tf.float32)
-    image /= 255
-    return image, label
+    # Scaling MNIST data from (0, 255] to (0., 1.]
+    def scale(image, label):
+        image = tf.cast(image, tf.float32)
+        image /= 255
+        return image, label
 
-  datasets, info = tfds.load(name='mnist',
-                            with_info=True,
-                            as_supervised=True)
+    datasets, info = tfds.load(
+        name="mnist", with_info=True, as_supervised=True
+    )
 
-  return datasets['train'].map(scale).repeat(1000).cache().shuffle(BUFFER_SIZE)
+    return (
+        datasets["train"].map(scale).repeat(1000).cache().shuffle(BUFFER_SIZE)
+    )
+
 
 train_datasets = make_datasets_unbatched().batch(BATCH_SIZE)
 
@@ -108,18 +119,23 @@ train_datasets = make_datasets_unbatched().batch(BATCH_SIZE)
 
 # + colab={} colab_type="code" id="aVPHl0SfG2v1"
 def build_and_compile_cnn_model():
-  model = tf.keras.Sequential([
-      tf.keras.layers.Conv2D(32, 3, activation='relu', input_shape=(28, 28, 1)),
-      tf.keras.layers.MaxPooling2D(),
-      tf.keras.layers.Flatten(),
-      tf.keras.layers.Dense(64, activation='relu'),
-      tf.keras.layers.Dense(10, activation='softmax')
-  ])
-  model.compile(
-      loss=tf.keras.losses.sparse_categorical_crossentropy,
-      optimizer=tf.keras.optimizers.SGD(learning_rate=0.001),
-      metrics=['accuracy'])
-  return model
+    model = tf.keras.Sequential(
+        [
+            tf.keras.layers.Conv2D(
+                32, 3, activation="relu", input_shape=(28, 28, 1)
+            ),
+            tf.keras.layers.MaxPooling2D(),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(64, activation="relu"),
+            tf.keras.layers.Dense(10, activation="softmax"),
+        ]
+    )
+    model.compile(
+        loss=tf.keras.losses.sparse_categorical_crossentropy,
+        optimizer=tf.keras.optimizers.SGD(learning_rate=0.001),
+        metrics=["accuracy"],
+    )
+    return model
 
 
 # + [markdown] colab_type="text" id="2UL3kisMO90X"
@@ -134,7 +150,7 @@ single_worker_model.fit(x=train_datasets, epochs=3, steps_per_epoch=5)
 #
 # Now let's enter the world of multi-worker training. In TensorFlow, `TF_CONFIG` environment variable is required for training on multiple machines, each of which possibly has a different role. `TF_CONFIG` is used to specify the cluster configuration on each worker that is part of the cluster.
 #
-# There are two components of `TF_CONFIG`: `cluster` and `task`. `cluster` provides information about the training cluster, which is a dict consisting of different types of jobs such as `worker`. In multi-worker training, there is usually one `worker` that takes on a little more responsibility like saving checkpoint and writing summary file for TensorBoard in addition to what a regular `worker` does. Such worker is referred to as the 'chief' worker, and it is customary that the `worker` with `index` 0 is appointed as the chief `worker` (in fact this is how `tf.distribute.Strategy` is implemented). `task` on the other hand provides information of the current task.  
+# There are two components of `TF_CONFIG`: `cluster` and `task`. `cluster` provides information about the training cluster, which is a dict consisting of different types of jobs such as `worker`. In multi-worker training, there is usually one `worker` that takes on a little more responsibility like saving checkpoint and writing summary file for TensorBoard in addition to what a regular `worker` does. Such worker is referred to as the 'chief' worker, and it is customary that the `worker` with `index` 0 is appointed as the chief `worker` (in fact this is how `tf.distribute.Strategy` is implemented). `task` on the other hand provides information of the current task.
 #
 # In this example, we set the task `type` to `"worker"` and the task `index` to `0`. This means the machine that has such setting is the first worker, which will be appointed as the chief worker and do more work than other workers. Note that other machines will need to have `TF_CONFIG` environment variable set as well, and it should have the same `cluster` dict, but different task `type` or task `index` depending on what the roles of those machines are.
 #
@@ -188,15 +204,15 @@ strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
 
 # + colab={} colab_type="code" id="BcsuBYrpgnlS"
 NUM_WORKERS = 2
-# Here the batch size scales up by number of workers since 
-# `tf.data.Dataset.batch` expects the global batch size. Previously we used 64, 
+# Here the batch size scales up by number of workers since
+# `tf.data.Dataset.batch` expects the global batch size. Previously we used 64,
 # and now this becomes 128.
 GLOBAL_BATCH_SIZE = 64 * NUM_WORKERS
 with strategy.scope():
-  # Creation of dataset, and model building/compiling need to be within 
-  # `strategy.scope()`.
-  train_datasets = make_datasets_unbatched().batch(GLOBAL_BATCH_SIZE)
-  multi_worker_model = build_and_compile_cnn_model()
+    # Creation of dataset, and model building/compiling need to be within
+    # `strategy.scope()`.
+    train_datasets = make_datasets_unbatched().batch(GLOBAL_BATCH_SIZE)
+    multi_worker_model = build_and_compile_cnn_model()
 
 # Keras' `model.fit()` trains the model with specified number of epochs and
 # number of steps per epoch. Note that the numbers here are for demonstration
@@ -211,7 +227,9 @@ multi_worker_model.fit(x=train_datasets, epochs=3000, steps_per_epoch=5000)
 
 # + colab={} colab_type="code" id="JxEtdh1vH-TF"
 options = tf.data.Options()
-options.experimental_distribute.auto_shard_policy = tf.data.experimental.AutoShardPolicy.OFF
+options.experimental_distribute.auto_shard_policy = (
+    tf.data.experimental.AutoShardPolicy.OFF
+)
 train_datasets_no_auto_shard = train_datasets.with_options(options)
 
 # + [markdown] colab_type="text" id="NBCtYvmCH-7g"
@@ -243,13 +261,12 @@ train_datasets_no_auto_shard = train_datasets.with_options(options)
 # + colab={} colab_type="code" id="xIY9vKnUU82o"
 # Replace the `filepath` argument with a path in the file system
 # accessible by all workers.
-callbacks = [tf.keras.callbacks.ModelCheckpoint(filepath='/tmp/keras-ckpt')]
+callbacks = [tf.keras.callbacks.ModelCheckpoint(filepath="/tmp/keras-ckpt")]
 with strategy.scope():
-  multi_worker_model = build_and_compile_cnn_model()
-multi_worker_model.fit(x=train_datasets,
-                       epochs=3,
-                       steps_per_epoch=5,
-                       callbacks=callbacks)
+    multi_worker_model = build_and_compile_cnn_model()
+multi_worker_model.fit(
+    x=train_datasets, epochs=3, steps_per_epoch=5, callbacks=callbacks
+)
 
 # + [markdown] colab_type="text" id="Ii6VmEdOjkZr"
 # If a worker gets preempted, the whole cluster pauses until the preempted worker is restarted. Once the worker rejoins the cluster, other workers will also restart. Now, every worker reads the checkpoint file that was previously saved and picks up its former state, thereby allowing the cluster to get back in sync. Then the training continues.
