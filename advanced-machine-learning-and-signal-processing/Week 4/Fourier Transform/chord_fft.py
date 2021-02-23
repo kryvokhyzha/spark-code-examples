@@ -13,6 +13,7 @@ import numpy as np
 from numpy.fft import fft
 from scipy.io import wavfile
 
+
 plt.rcParams["xtick.labelsize"] = 14
 plt.rcParams["ytick.labelsize"] = 14
 plt.style.use("seaborn")

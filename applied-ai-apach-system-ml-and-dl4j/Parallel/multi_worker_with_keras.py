@@ -64,15 +64,11 @@
 # First, setup TensorFlow and the necessary imports.
 
 # + colab={} colab_type="code" id="IqR2PQG4ZaZ0"
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import tensorflow as tf
 import tensorflow_datasets as tfds
+
 
 # + colab={} colab_type="code" id="bnYxvfLD-LW-"
 
@@ -98,13 +94,9 @@ def make_datasets_unbatched():
         image /= 255
         return image, label
 
-    datasets, info = tfds.load(
-        name="mnist", with_info=True, as_supervised=True
-    )
+    datasets, info = tfds.load(name="mnist", with_info=True, as_supervised=True)
 
-    return (
-        datasets["train"].map(scale).repeat(1000).cache().shuffle(BUFFER_SIZE)
-    )
+    return datasets["train"].map(scale).repeat(1000).cache().shuffle(BUFFER_SIZE)
 
 
 train_datasets = make_datasets_unbatched().batch(BATCH_SIZE)
@@ -121,9 +113,7 @@ train_datasets = make_datasets_unbatched().batch(BATCH_SIZE)
 def build_and_compile_cnn_model():
     model = tf.keras.Sequential(
         [
-            tf.keras.layers.Conv2D(
-                32, 3, activation="relu", input_shape=(28, 28, 1)
-            ),
+            tf.keras.layers.Conv2D(32, 3, activation="relu", input_shape=(28, 28, 1)),
             tf.keras.layers.MaxPooling2D(),
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(64, activation="relu"),
@@ -264,9 +254,7 @@ train_datasets_no_auto_shard = train_datasets.with_options(options)
 callbacks = [tf.keras.callbacks.ModelCheckpoint(filepath="/tmp/keras-ckpt")]
 with strategy.scope():
     multi_worker_model = build_and_compile_cnn_model()
-multi_worker_model.fit(
-    x=train_datasets, epochs=3, steps_per_epoch=5, callbacks=callbacks
-)
+multi_worker_model.fit(x=train_datasets, epochs=3, steps_per_epoch=5, callbacks=callbacks)
 
 # + [markdown] colab_type="text" id="Ii6VmEdOjkZr"
 # If a worker gets preempted, the whole cluster pauses until the preempted worker is restarted. Once the worker rejoins the cluster, other workers will also restart. Now, every worker reads the checkpoint file that was previously saved and picks up its former state, thereby allowing the cluster to get back in sync. Then the training continues.

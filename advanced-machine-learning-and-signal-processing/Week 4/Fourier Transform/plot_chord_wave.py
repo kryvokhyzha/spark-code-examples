@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io import wavfile
 
+
 fs, snd = wavfile.read("output.wav")
 
 snd = snd / (2.0 ** 15)

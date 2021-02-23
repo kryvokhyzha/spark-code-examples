@@ -27,4 +27,3 @@ MAG = sqrt(DFT[,1]^2 + DFT[,2]^2)
 MAG = MAG[1:ceil(N/2),]*2/N
 
 print(toString(MAG, sep="\t\t", decimal=1))
-

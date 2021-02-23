@@ -10,6 +10,7 @@ from datetime import datetime
 # The sample connects to a device-specific MQTT endpoint on your IoT Hub.
 from azure.iot.device import IoTHubDeviceClient, Message
 
+
 # The device connection string to authenticate the device with your IoT hub.
 # Using the Azure CLI:
 # az iot hub device-identity show-connection-string --hub-name {YourIoTHubName} --device-id MyNodeDevice --output table
@@ -25,9 +26,7 @@ MSG_TXT = '{{"timestamp":{timestamp}, "temperature":{temperature},"humidity":{hu
 
 def iothub_client_init():
     # Create an IoT Hub client
-    client = IoTHubDeviceClient.create_from_connection_string(
-        CONNECTION_STRING
-    )
+    client = IoTHubDeviceClient.create_from_connection_string(CONNECTION_STRING)
     return client
 
 
