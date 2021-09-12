@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dimajix
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kaya
